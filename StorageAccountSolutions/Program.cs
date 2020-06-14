@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 
 namespace StorageAccountSolutions
 {
@@ -22,13 +23,28 @@ namespace StorageAccountSolutions
             //CreateBlob().Wait();
             //GetBlobs().Wait();
 
-            MetadataFunctions();
+            //MetadataFunctions();
 
+            AcquireLease();
             
             Console.WriteLine("\nComplete");
             Console.ReadKey();
         }
 
+        static void AcquireLease()
+        {
+            //https://manojchoudhari.wordpress.com/2019/12/06/implementing-azure-blob-leasing-using-net-sdk/
+            BlobContainerClient containerClient = client.GetBlobContainerClient(containerName);
+            BlobClient blob = containerClient.GetBlobClient(filename);
+            BlobLeaseClient leaseClient = blob.GetBlobLeaseClient();
+            TimeSpan ts = new TimeSpan(0, 0, 0, 30);
+            leaseClient.AcquireAsync(ts);
+            Azure.Response<BlobLease> blobLeaseResponse = leaseClient.Acquire(ts);
+
+            Console.WriteLine("Blob Lease Id:" + blobLeaseResponse.Value.LeaseId);
+            Console.WriteLine("Remaining Lease Time: " + blobLeaseResponse.Value.LeaseTime);
+            Console.WriteLine("Acquired lease, Press ENTER to continue");
+        }
         private static void MetadataFunctions()
         {
             GetProperties();
