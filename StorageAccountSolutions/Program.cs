@@ -22,12 +22,19 @@ namespace StorageAccountSolutions
             //CreateBlob().Wait();
             //GetBlobs().Wait();
 
+            MetadataFunctions();
+
+            
+            Console.WriteLine("\nComplete");
+            Console.ReadKey();
+        }
+
+        private static void MetadataFunctions()
+        {
             GetProperties();
             GetMetadata();
             SetMetadataAsync().Wait();
             GetMetadata();
-            Console.WriteLine("\nComplete");
-            Console.ReadKey();
         }
 
         static async Task CreateBlob()
